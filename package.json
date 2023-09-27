@@ -1,0 +1,15 @@
+{
+  "name": "vanillajs_clone_notion",
+  "version": "1.0.0",
+  "description": "Vanilla JavaScript로 구현해보는 노션 클로닝",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.0.3",
+    "serve": "^14.2.1"
+  }
+}
