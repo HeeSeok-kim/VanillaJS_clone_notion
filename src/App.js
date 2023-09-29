@@ -1,9 +1,7 @@
 import DefaultDocument from "./pages/DefaultDocument.js";
-import DocumentPage from "./pages/DocumentPage.js";
-import { initRouter, renderPage } from "./routes/index.js";
+import { initRouter } from "./routes/index.js";
 import Navigation from "./components/Navigation/Navigation.js";
-import { defaultDocument } from "./constants/index.js";
-import { getItem } from "./utils/storage.js";
+import DocumentPage from "./pages/DocumentPage.js";
 
 export default class App {
   constructor({ $target }) {
@@ -22,6 +20,9 @@ export default class App {
 
     if (pathname === "/") {
       new DefaultDocument({ $target: this.$target });
+    } else if (pathname.indexOf("documents") === 1) {
+      const [, , documentId] = pathname.split("/");
+      new DocumentPage({ $target: this.$target, props: documentId });
     }
   }
 }
