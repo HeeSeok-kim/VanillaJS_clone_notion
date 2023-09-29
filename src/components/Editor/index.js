@@ -1,11 +1,14 @@
-export default function Editor(props) {
-  console.log(props);
-  const $Editor = `
-    <div class="editor_container">
+import Component from "../../template/component.js";
+
+export default class Editor extends Component {
+  view() {
+    const $Editor = document.createElement("div");
+    $Editor.className = "editor_container";
+    $Editor.innerHTML = `
       <input>
       <textarea></textarea>
-    <div>
-  `;
+    `;
 
-  return $Editor;
+    return $Editor;
+  }
 }

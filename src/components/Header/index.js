@@ -1,9 +1,12 @@
-export default function Header({ title }) {
-  const $Header = `
-    <header class="document_header">
-        ${title ? title : "제목없음"}
-    </header>
-  `;
+import Component from "../../template/component.js";
 
-  return $Header;
+export default class Header extends Component {
+  view() {
+    const { title } = this.props;
+    const $Header = document.createElement("header");
+    $Header.className = "document_header";
+    $Header.textContent = title ? title : "제목없음";
+
+    return $Header;
+  }
 }
