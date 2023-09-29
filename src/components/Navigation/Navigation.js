@@ -1,5 +1,8 @@
 import NavigationCard from "./NavigationCard.js";
-import { defaultDocument, defaultForm } from "../../constants/index.js";
+import {
+  defaultDocument,
+  defaultForm,
+} from "../../constants/documentTemplate.js";
 import { getItem, setItem } from "../../utils/storage.js";
 import { push } from "../../routes/index.js";
 import Component from "../../template/component.js";
@@ -101,6 +104,6 @@ export default class Navigation extends Component {
   }
 
   #onMove({ id }) {
-    this.navigate(`/dicuments/${id}`);
+    this.navigate(`/documents/${id}`);
   }
 }
