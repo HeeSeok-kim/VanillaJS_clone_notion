@@ -11,26 +11,36 @@ export default class Navigation extends Component {
     move: (id) => this.#onMove(id),
   };
 
+  init() {
+    this.state = defaultDocument;
+    const result = getItem("document");
+    if (result) {
+      this.state = JSON.parse(result);
+    }
+  }
+
   #deleteState({ id }) {
-    console.log(id);
     const stateId = parseInt(id);
-
+    //첫번째 목록은 삭제가 되지 않기 위한 예외처리 코드
     if (stateId === 0) return;
-    delete this.props.detailDocument[stateId];
-    delete this.props.toggles[stateId];
 
-    const documents = this.props.documents.filter(
+    delete this.state.detailDocument[stateId];
+    delete this.state.toggles[stateId];
+
+    const documents = this.state.documents.filter(
       (document) => document.id !== stateId
     );
-    this.props.documents = documents;
-    setItem("document", this.props);
-    this.render();
+    this.state.documents = documents;
+    this.setState(this.state);
+    setItem("document", this.state);
   }
+
   view() {
-    const { documents, toggles } = this.props;
-    return `
-      <div class="navigation">
-        <div class="navigation_header">😄 Hee Notion</div>
+    const $navigation = document.createElement("div");
+    $navigation.className = "navigation";
+    const { documents, toggles } = this.state;
+    $navigation.innerHTML = `
+      <div class="navigation_header">😄 Hee Notion</div>
         <div class="navigation_content">
           ${documents
             .map((document) =>
@@ -46,27 +56,9 @@ export default class Navigation extends Component {
             <img src="/assets/add.svg">
             <span>페이지 추가<span>
         </div>
-      </div>
     `;
+    return $navigation;
   }
-  updateState(form) {
-    const { documents, length, detailDocument, toggles } = this.props;
-    form.id = length;
-
-    detailDocument[form.id] = {
-      ...form,
-    };
-    toggles[form.id] = false;
-    documents.push({
-      id: form.id,
-      title: form.title,
-      document: form.document,
-    });
-
-    this.props.length += 1;
-    setItem("document", this.props);
-  }
-
   mount() {
     this.querySelectorChild(`.navigation`).addEventListener("click", (e) => {
       const { target } = e;
@@ -75,8 +67,26 @@ export default class Navigation extends Component {
 
       if (id === "newDocument") {
         const form = JSON.parse(defaultForm);
-        this.updateState(form);
-        this.render();
+        form.id = this.state.length;
+
+        this.state.detailDocument[form.id] = {
+          ...form,
+        };
+        this.state.toggles[form.id] = false;
+
+        this.state.documents = [
+          ...this.state.documents,
+          {
+            id: form.id,
+            title: form.title,
+            document: form.document,
+          },
+        ];
+
+        this.state.length += 1;
+
+        this.setState(this.state);
+        setItem("document", this.state);
       } else {
         if (action in this.#actions) {
           this.#actions[action]({ id });
@@ -86,12 +96,11 @@ export default class Navigation extends Component {
   }
 
   #onToggle({ id }) {
-    this.props.toggles[id] = !this.props.toggles[id];
-    this.render();
+    this.state.toggles[id] = !this.state.toggles[id];
+    this.setState(this.props);
   }
 
   #onMove({ id }) {
-    push(`/documents/${id}`);
     this.navigate(`/dicuments/${id}`);
   }
 }
