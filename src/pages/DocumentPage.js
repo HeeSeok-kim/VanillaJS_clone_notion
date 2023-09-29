@@ -1,7 +1,8 @@
-import { getItem } from "../utils/storage.js";
+import { getItem, setItem } from "../utils/storage.js";
 import Header from "../components/Header/index.js";
 import Editor from "../components/Editor/index.js";
 import Component from "../template/component.js";
+import debounce from "../utils/debounce.js";
 
 export default class DocumentPage extends Component {
   init() {
@@ -24,9 +25,38 @@ export default class DocumentPage extends Component {
     });
     new Editor({
       $target: $documentContainer,
-      props: this.state,
+      props: {
+        state: this.state,
+        documentId: documentId,
+      },
     });
     // ${Editor(this.state)}
     return $documentContainer;
+  }
+
+  mount() {
+    const documentId = this.props;
+    this.$target.addEventListener(
+      "keyup",
+      debounce((e) => {
+        const className = e.target.className;
+        const detailDocument = this.state.detailDocument[documentId];
+        const document = this.state.documents.find((document) => {
+          return document.id === parseInt(documentId);
+        });
+        const value = e.target.value;
+
+        if (className === "title") {
+          detailDocument.title = value;
+          document.title = value;
+        } else {
+          detailDocument.content = value;
+          document.content = value;
+        }
+
+        this.setState(this.state);
+        setItem("document", this.state);
+      }, 500)
+    );
   }
 }
