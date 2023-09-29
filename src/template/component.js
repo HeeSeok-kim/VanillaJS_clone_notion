@@ -29,7 +29,13 @@ export default class Component {
   mount() {} // dom이 추가된 이후에 실행되어야 할 동작들
 
   render() {
-    this.$target.innerHTML = this.view();
+    const className = this.view().className;
+    const existingElement = this.$target.querySelector(`.${className}`);
+    if (existingElement) {
+      this.$target.replaceChild(this.view(), existingElement);
+    } else {
+      this.$target.append(this.view());
+    }
     this.mount();
   }
 
