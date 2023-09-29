@@ -1,0 +1,11 @@
+.default_document {
+    display: flex;
+    flex-grow:1;
+    align-items: center;
+    justify-content: center;
+}
+
+.default_document > span {
+    font-size: 40px;
+    color: rgba(55, 53, 47, 0.65);
+}
