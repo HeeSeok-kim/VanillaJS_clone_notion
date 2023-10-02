@@ -14,12 +14,12 @@ export default class DocumentPage extends Component {
 
   view() {
     const { detailDocument } = this.state;
-    const documentId = this.props;
+    const documentId = this.props.documentId;
     const $documentContainer = document.createElement("div");
 
     $documentContainer.className = "document_container";
 
-    new Header({
+    this.header = new Header({
       $target: $documentContainer,
       props: detailDocument[documentId],
     });
@@ -35,7 +35,7 @@ export default class DocumentPage extends Component {
   }
 
   mount() {
-    const documentId = this.props;
+    const documentId = this.props.documentId;
     this.$target.addEventListener(
       "keyup",
       debounce((e) => {
@@ -46,7 +46,7 @@ export default class DocumentPage extends Component {
         });
         const value = e.target.value;
 
-        if (className === "title") {
+        if (className == "title") {
           detailDocument.title = value;
           document.title = value;
         } else {
@@ -54,8 +54,10 @@ export default class DocumentPage extends Component {
           document.content = value;
         }
 
-        this.setState(this.state);
         setItem("document", this.state);
+
+        this.header.render();
+        this.props.navigation.setState(this.state);
       }, 500)
     );
   }

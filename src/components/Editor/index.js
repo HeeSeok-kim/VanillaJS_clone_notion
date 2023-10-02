@@ -9,21 +9,25 @@ export default class Editor extends Component {
 
   view() {
     const $Editor = document.createElement("div");
-    const detailDocument = this.props.state.detailDocument;
-    // console.log(detailDocument);
+    const detailDocument = this.state.detailDocument;
     const { documentId } = this.props;
     const title = detailDocument[documentId].title;
     const content = detailDocument[documentId].content;
-    // console.log(detailDocument[documentId]);
 
     $Editor.className = "editor_container";
     $Editor.innerHTML = `
-      <input class="title" type="text" value="${
-        title ? title : ""
-      }" placeholder="${title ? "" : "제목 없음"}" >
-      <textarea class="content" placeholder="${
-        content ? "" : "본문을 입력해주세요"
-      }">${content ? content : ""}</textarea>
+      <input 
+        class="title" 
+        type="text" 
+        value="${title ? title : ""}" 
+        placeholder="${title ? "" : "제목 없음"}" 
+        ${documentId === "0" ? "disabled" : ""}
+      >
+      <textarea 
+        class="content" 
+        placeholder="${content ? "" : "본문을 입력해주세요"}"
+        ${documentId === "0" ? "disabled" : ""}
+      >${content ? content : ""}</textarea>
     `;
 
     return $Editor;
