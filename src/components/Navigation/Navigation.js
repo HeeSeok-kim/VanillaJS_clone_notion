@@ -4,7 +4,6 @@ import {
   defaultForm,
 } from "../../constants/documentTemplate.js";
 import { getItem, setItem } from "../../utils/storage.js";
-import { push } from "../../routes/index.js";
 import Component from "../../template/component.js";
 
 export default class Navigation extends Component {
@@ -15,11 +14,7 @@ export default class Navigation extends Component {
   };
 
   init() {
-    this.state = defaultDocument;
-    const result = getItem("document");
-    if (result) {
-      this.state = JSON.parse(result);
-    }
+    this.state = JSON.parse(JSON.stringify(this.props));
   }
 
   #deleteState({ id }) {
@@ -34,8 +29,8 @@ export default class Navigation extends Component {
       (document) => document.id !== stateId
     );
     this.state.documents = documents;
-    this.setState(this.state);
     setItem("document", this.state);
+    this.navigate(`/documents/0`);
   }
 
   view() {
@@ -88,8 +83,9 @@ export default class Navigation extends Component {
 
         this.state.length += 1;
 
-        this.setState(this.state);
+        // this.setState(this.state);
         setItem("document", this.state);
+        this.navigate(`/documents/${form.id}`);
       } else {
         if (action in this.#actions) {
           this.#actions[action]({ id });

@@ -3,6 +3,10 @@ body {
     padding: 0;
     border: 0;
     background: #ffffff;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+* {
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 #app {
@@ -14,3 +18,12 @@ body {
     display: none;
 }
 
+input:disabled {
+    background: #ffffff;
+    color: black;
+}
+
+textarea:disabled {
+    background: #ffffff;
+    color: black;
+}
