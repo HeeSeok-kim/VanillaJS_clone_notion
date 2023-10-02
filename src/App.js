@@ -35,7 +35,7 @@ export default class App {
       navigation.view();
       new DocumentPage({
         $target: this.$target,
-        props: { documentId, navigation },
+        props: { documentId, navigation, state: this.state },
       });
     }
   }

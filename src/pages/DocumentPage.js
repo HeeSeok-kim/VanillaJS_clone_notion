@@ -7,9 +7,9 @@ import debounce from "../utils/debounce.js";
 export default class DocumentPage extends Component {
   init() {
     const result = getItem("document");
-    if (result) {
-      this.state = JSON.parse(result);
-    }
+    result
+      ? (this.state = JSON.parse(result))
+      : (this.state = this.props.state);
   }
 
   view() {
