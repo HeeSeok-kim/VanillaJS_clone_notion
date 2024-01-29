@@ -5,48 +5,47 @@ import {
 } from "../../constants/documentTemplate.js";
 import { getItem, setItem } from "../../utils/storage.js";
 import Component from "../../template/component.js";
+import deleteDocument, {
+  getDocumentList,
+  postDocument,
+} from "../../../api/document.js";
 
 export default class Navigation extends Component {
   #actions = {
-    delete: (id) => this.#deleteState(id),
+    delete: async (id) => await this.#deleteState(id),
     toggle: (id) => this.#onToggle(id),
     move: (id) => this.#onMove(id),
   };
 
   init() {
-    this.state = JSON.parse(JSON.stringify(this.props));
+    this.fetchDocumentList();
   }
 
-  #deleteState({ id }) {
-    const stateId = parseInt(id);
+  async #deleteState({ id }) {
+    const documentId = parseInt(id);
     //첫번째 목록은 삭제가 되지 않기 위한 예외처리 코드
-    if (stateId === 0) return;
+    if (documentId === 0) return;
 
-    delete this.state.detailDocument[stateId];
-    delete this.state.toggles[stateId];
-
-    const documents = this.state.documents.filter(
-      (document) => document.id !== stateId
-    );
-    this.state.documents = documents;
-    setItem("document", this.state);
+    await deleteDocument(documentId);
     this.navigate(`/documents/0`);
   }
 
   view() {
     const $navigation = document.createElement("div");
     $navigation.className = "navigation";
-    const { documents, toggles } = this.state;
-    $navigation.innerHTML = `
-      <div class="navigation_header">😄 Hee Notion</div>
+    if (this.state) {
+      const { documents, toggles } = this.state;
+      $navigation.innerHTML = `
+        <div class="navigation_header">😄 Hee Notion TEST</div>
         <div class="navigation_content">
           ${documents
-            .map((document) =>
-              NavigationCard({
-                id: document.id,
-                title: document.title,
-                toggle: toggles[document.id],
-              })
+            .map(
+              (document) =>
+                new NavigationCard({
+                  id: document.id,
+                  title: document.title,
+                  toggle: toggles[document.id],
+                })
             )
             .join("")}
         </div>
@@ -55,43 +54,28 @@ export default class Navigation extends Component {
             <span>페이지 추가<span>
         </div>
     `;
+    }
+
     return $navigation;
   }
   mount() {
-    this.querySelectorChild(`.navigation`).addEventListener("click", (e) => {
-      const { target } = e;
-      const id = target.parentNode.dataset.id;
-      const action = target.dataset.action; // data-action 값을 가져옵니다.
+    this.querySelectorChild(`.navigation`).addEventListener(
+      "click",
+      async (e) => {
+        const { target } = e;
+        const id = target.parentNode.dataset.id;
+        const action = target.dataset.action; // data-action 값을 가져옵니다.
 
-      if (id === "newDocument") {
-        const form = JSON.parse(defaultForm);
-        form.id = this.state.length;
-
-        this.state.detailDocument[form.id] = {
-          ...form,
-        };
-        this.state.toggles[form.id] = false;
-
-        this.state.documents = [
-          ...this.state.documents,
-          {
-            id: form.id,
-            title: form.title,
-            document: form.document,
-          },
-        ];
-
-        this.state.length += 1;
-
-        // this.setState(this.state);
-        setItem("document", this.state);
-        this.navigate(`/documents/${form.id}`);
-      } else {
-        if (action in this.#actions) {
-          this.#actions[action]({ id });
+        if (id === "newDocument") {
+          const result = await postDocument();
+          this.navigate(`/documents/${result.length - 1}`);
+        } else {
+          if (action in this.#actions) {
+            this.#actions[action]({ id });
+          }
         }
       }
-    });
+    );
   }
 
   #onToggle({ id }) {
@@ -101,5 +85,10 @@ export default class Navigation extends Component {
 
   #onMove({ id }) {
     this.navigate(`/documents/${id}`);
+  }
+
+  async fetchDocumentList() {
+    const documentList = await getDocumentList();
+    this.setState(documentList);
   }
 }
